@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard Kemiskinan{% endblock %}
+
+{% block content %}
+<h1>Dashboard Data Kemiskinan Indonesia</h1>
+
+<div class="subtitle-box">
+    <p class="subtitle">
+        Visualisasi dan ringkasan data kemiskinan kabupaten/kota di Indonesia berdasarkan berbagai indikator pembangunan.
+    </p>
+</div>
+
+<!-- Ringkasan Nasional -->
+<div class="cards-row">
+    <div class="info-card">
+        <div class="info-label">Total Provinsi</div>
+        <div class="info-value">{{ total_provinsi }}</div>
+    </div>
+    <div class="info-card">
+        <div class="info-label">Total Kab/Kota</div>
+        <div class="info-value">{{ total_kabkota }}</div>
+    </div>
+    <div class="info-card">
+        <div class="info-label">Wilayah Miskin (label 1)</div>
+        <div class="info-value">{{ total_miskin }}</div>
+    </div>
+    <div class="info-card">
+        <div class="info-label">Wilayah Tidak Miskin (label 0)</div>
+        <div class="info-value">{{ total_tidak_miskin }}</div>
+    </div>
+</div>
+
+<div class="cards-row">
+    <div class="info-card">
+        <div class="info-label">Rata-rata P0 Nasional</div>
+        <div class="info-value">{{ avg_p0|round(2) }}%</div>
+    </div>
+    <div class="info-card">
+        <div class="info-label">Rata-rata IPM Nasional</div>
+        <div class="info-value">{{ avg_ipm|round(2) }}</div>
+    </div>
+    <div class="info-card">
+        <div class="info-label">Rata-rata Pengeluaran per Kapita</div>
+        <div class="info-value">{{ avg_pengeluaran|round(0) }}</div>
+    </div>
+</div>
+
+<hr class="divider">
+
+<!-- Filter Provinsi -->
+<form method="get" class="filter-form">
+    <label for="provinsi">Pilih Provinsi:</label>
+    <select name="provinsi" id="provinsi">
+        <option value="ALL" {% if selected_prov == "ALL" %}selected{% endif %}>Semua Provinsi</option>
+        {% for p in provinsi_list %}
+        <option value="{{ p }}" {% if selected_prov == p %}selected{% endif %}>{{ p }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn">Tampilkan</button>
+</form>
+
+<!-- Ringkasan Provinsi Terpilih -->
+<h2 style="margin-top:20px;">Ringkasan: {{ judul }}</h2>
+<div class="cards-row">
+    <div class="info-card small">
+        <div class="info-label">Jumlah Kab/Kota</div>
+        <div class="info-value">{{ prov_total_kabkota }}</div>
+    </div>
+    <div class="info-card small">
+        <div class="info-label">Wilayah Miskin</div>
+        <div class="info-value">{{ prov_miskin }}</div>
+    </div>
+    <div class="info-card small">
+        <div class="info-label">Wilayah Tidak Miskin</div>
+        <div class="info-value">{{ prov_tidak_miskin }}</div>
+    </div>
+    <div class="info-card small">
+        <div class="info-label">Rata-rata P0</div>
+        <div class="info-value">{{ prov_avg_p0|round(2) }}%</div>
+    </div>
+    <div class="info-card small">
+        <div class="info-label">Rata-rata IPM</div>
+        <div class="info-value">{{ prov_avg_ipm|round(2) }}</div>
+    </div>
+</div>
+
+<!-- Grafik -->
+<h2 style="margin-top:25px;">Grafik Nasional</h2>
+<div style="text-align:center">
+    <img src="{{ url_for('static', filename='charts/p0_distribution.png') }}" width="80%" class="fade-in">
+    <img src="{{ url_for('static', filename='charts/kemiskinan_pie.png') }}" width="60%" class="fade-in" style="margin-top:20px;">
+    <img src="{{ url_for('static', filename='charts/miskin_per_provinsi.png') }}" width="95%" class="fade-in" style="margin-top:20px;">
+    <img src="{{ url_for('static', filename='charts/korelasi.png') }}" width="95%" class="fade-in" style="margin-top:20px;">
+</div>
+
+<!-- Tabel Data -->
+<h2 style="margin-top:30px;">Tabel Data Kemiskinan ({{ judul }})</h2>
+<p class="subtitle small">
+    Tabel ini interaktif: Anda bisa <b>search</b>, <b>sort</b>, dan <b>scroll</b>.
+</p>
+
+<div class="table-wrapper">
+    <table id="tabel-kemiskinan" class="display">
+        <thead>
+            <tr>
+                <th>Provinsi</th>
+                <th>Kab/Kota</th>
+                <th>P0 (%)</th>
+                <th>IPM</th>
+                <th>Pengeluaran / Kapita</th>
+                <th>Umur Harapan Hidup</th>
+                <th>Klasifikasi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data_tabel %}
+            <tr>
+                <td>{{ row['Provinsi'] }}</td>
+                <td>{{ row['Kab/Kota'] }}</td>
+                <td>{{ row['Persentase Penduduk Miskin (P0) Menurut Kabupaten/Kota (Persen)']|round(2) }}</td>
+                <td>{{ row['Indeks Pembangunan Manusia']|round(2) }}</td>
+                <td>{{ row['Pengeluaran per Kapita Disesuaikan (Ribu Rupiah/Orang/Tahun)']|round(0) }}</td>
+                <td>{{ row['Umur Harapan Hidup (Tahun)']|round(2) }}</td>
+                <td>{{ row['Klasifikasi Kemiskinan'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function () {
+        $('#tabel-kemiskinan').DataTable({
+            "pageLength": 10
+        });
+    });
+</script>
+{% endblock %}

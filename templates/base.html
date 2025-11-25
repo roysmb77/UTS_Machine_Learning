@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Klasifikasi Kemiskinan Indonesia{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- DataTables (hanya dipakai di dashboard, tapi aman di-load di base) -->
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script
+      src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+    <nav class="top-nav">
+        <div class="nav-title">Klasifikasi Tingkat Kemiskinan Indonesia</div>
+        <div class="nav-links">
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('model_info') }}">Model</a>
+            <a href="{{ url_for('predict') }}">Prediksi</a>
+        </div>
+    </nav>
+
+    <div class="container fade-in">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        Aplikasi UTS Machine Learning • Data: Tingkat Kemiskinan Kabupaten/Kota di Indonesia
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

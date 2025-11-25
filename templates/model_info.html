@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Informasi Model{% endblock %}
+
+{% block content %}
+<h1>Informasi Model Random Forest</h1>
+
+<div class="subtitle-box">
+    <p class="subtitle">
+        Model yang digunakan adalah <b>Random Forest Classifier</b> untuk melakukan klasifikasi tingkat kemiskinan
+        kabupaten/kota di Indonesia menjadi dua kelas: <b>0 = Tidak Miskin</b> dan <b>1 = Miskin</b>.
+    </p>
+    <p class="subtitle small">
+        Fitur utama yang digunakan antara lain: P0, IPM, pengeluaran per kapita, umur harapan hidup, akses air minum,
+        sanitasi, TPT, TPAK, dan PDRB.
+    </p>
+</div>
+
+<h2>Evaluasi Model</h2>
+<div style="text-align:center">
+    <img src="{{ url_for('static', filename='charts/confusion.png') }}" width="60%" class="fade-in">
+    <img src="{{ url_for('static', filename='charts/roc.png') }}" width="60%" class="fade-in" style="margin-top:20px;">
+    <img src="{{ url_for('static', filename='charts/importance.png') }}" width="80%" class="fade-in" style="margin-top:20px;">
+</div>
+
+<div class="result-box">
+    <p>
+        Pada halaman ini Anda dapat menjelaskan:
+    </p>
+    <ul style="text-align:left;">
+        <li>Interpretasi <b>confusion matrix</b> (TP, FP, FN, TN).</li>
+        <li>Makna nilai <b>AUC ROC</b> untuk kemampuan pemisahan kelas.</li>
+        <li>Fitur mana yang paling berpengaruh terhadap klasifikasi kemiskinan.</li>
+    </ul>
+</div>
+
+{% endblock %}

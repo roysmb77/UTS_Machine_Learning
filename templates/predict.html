@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Prediksi Kemiskinan{% endblock %}
+
+{% block content %}
+<h1>Prediksi Klasifikasi Tingkat Kemiskinan</h1>
+
+<div class="subtitle-box">
+    <p class="subtitle">
+        Pilih <b>provinsi</b> dan <b>kabupaten/kota</b>. Aplikasi akan mengambil nilai indikator dari dataset
+        dan mengklasifikasikan apakah wilayah tersebut masuk kategori <b>Miskin (1)</b> atau <b>Tidak Miskin (0)</b>.
+    </p>
+    <p class="subtitle small">
+        Tidak perlu input angka satu-satu — semua diambil otomatis dari data yang sama dengan yang digunakan untuk melatih model.
+    </p>
+</div>
+
+<form method="post" class="form-box">
+    <div class="grid">
+        <div>
+            <label for="provinsi">Provinsi</label>
+            <select name="provinsi" id="provinsi" onchange="updateKab()">
+                <option value="">-- Pilih Provinsi --</option>
+                {% for p in provinsi_list %}
+                <option value="{{ p }}">{{ p }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="kabkota">Kabupaten/Kota</label>
+            <select name="kabkota" id="kabkota">
+                <option value="">-- Pilih Kab/Kota --</option>
+            </select>
+        </div>
+    </div>
+
+    <button type="submit" class="btn">Prediksi</button>
+</form>
+
+{% if hasil %}
+<div class="result-box">
+    <h2>Hasil Prediksi</h2>
+    <p style="font-size:20px; font-weight:bold;">{{ hasil }}</p>
+
+    {% if prob_miskin is not none %}
+    <p>
+        Probabilitas <b>Miskin (1)</b>: {{ (prob_miskin * 100)|round(2) }}%<br>
+        Probabilitas <b>Tidak Miskin (0)</b>: {{ (prob_tidak_miskin * 100)|round(2) }}%
+    </p>
+    {% endif %}
+
+    {% if detail_row %}
+    <hr style="margin:15px 0;">
+    <h3>Detail Indikator Wilayah</h3>
+    <table class="detail-table">
+        <tr><th>Provinsi</th><td>{{ detail_row.Provinsi }}</td></tr>
+        <tr><th>Kab/Kota</th><td>{{ detail_row['Kab/Kota'] }}</td></tr>
+        <tr><th>P0 (%)</th><td>{{ detail_row.P0 }}</td></tr>
+        <tr><th>IPM</th><td>{{ detail_row.IPM }}</td></tr>
+        <tr><th>Pengeluaran / Kapita</th><td>{{ detail_row.Pengeluaran }}</td></tr>
+        <tr><th>Umur Harapan Hidup</th><td>{{ detail_row.UmurHarapan }}</td></tr>
+        <tr><th>Akses Sanitasi Layak</th><td>{{ detail_row.Sanitasi }}</td></tr>
+        <tr><th>Akses Air Minum Layak</th><td>{{ detail_row.AirMinum }}</td></tr>
+        <tr><th>TPT</th><td>{{ detail_row.TPT }}</td></tr>
+        <tr><th>TPAK</th><td>{{ detail_row.TPAK }}</td></tr>
+        <tr><th>PDRB (konstan)</th><td>{{ detail_row.PDRB }}</td></tr>
+        <tr><th>Label Asli di Dataset</th><td>{{ detail_row.LabelAsli }}</td></tr>
+    </table>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // mapping provinsi -> kab/kota dari backend (dikirim sebagai JSON)
+    const mappingKab = {{ mapping_kab|tojson }};
+
+    function updateKab() {
+        const prov = document.getElementById('provinsi').value;
+        const kabSelect = document.getElementById('kabkota');
+        kabSelect.innerHTML = '<option value="">-- Pilih Kab/Kota --</option>';
+
+        if (prov && mappingKab[prov]) {
+            mappingKab[prov].forEach(function (nama) {
+                const opt = document.createElement('option');
+                opt.value = nama;
+                opt.textContent = nama;
+                kabSelect.appendChild(opt);
+            });
+        }
+    }
+</script>
+{% endblock %}
